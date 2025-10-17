@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sign In / Sign Up</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    @import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
+
+    * { box-sizing: border-box; }
+    body {
+      background: url('images/imgbg.jpg') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      font-family: 'Montserrat', sans-serif;
+      height: 100vh;
+      margin: 0;
+      color: #fff;
+    }
+
+    h1 { font-weight: bold; margin: 0; color: #00e6e6; }
+    p { font-size: 14px; font-weight: 100; line-height: 20px; letter-spacing: 0.5px; margin: 20px 0 30px; }
+    span { font-size: 12px; color: #aaa; }
+    a { color: #00e6e6; font-size: 14px; text-decoration: none; margin: 15px 0; transition: color 0.3s ease; }
+    a:hover { color: #66ffff; }
+
+    button {
+      border-radius: 20px;
+      border: 1px solid #00e6e6;
+      background-color: #00e6e6;
+      color: #0d0d0d;
+      font-size: 12px;
+      font-weight: bold;
+      padding: 12px 45px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: transform 80ms ease-in;
+      cursor: pointer;
+    }
+    button:active { transform: scale(0.95); }
+    button:focus { outline: none; }
+    button.ghost { background-color: transparent; border-color: #00e6e6; color: #00e6e6; }
+
+    form {
+      background-color: #1a1a1a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 0 50px;
+      height: 100%;
+      text-align: center;
+    }
+
+    input {
+      background-color: #333;
+      border: none;
+      padding: 12px 15px;
+      margin: 8px 0;
+      width: 100%;
+      color: #fff;
+      border-radius: 5px;
+    }
+
+    .container {
+      background-color: #111;
+      border-radius: 10px;
+      box-shadow: 0 14px 28px rgba(0,0,0,0.6),
+                  0 10px 10px rgba(0,0,0,0.5);
+      position: relative;
+      overflow: hidden;
+      width: 768px;
+      max-width: 100%;
+      min-height: 480px;
+    }
+
+    .form-container {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      transition: all 0.6s ease-in-out;
+    }
+
+    .sign-in-container { left: 0; width: 50%; z-index: 2; }
+    .container.right-panel-active .sign-in-container { transform: translateX(100%); }
+
+    .sign-up-container { left: 0; width: 50%; opacity: 0; z-index: 1; }
+    .container.right-panel-active .sign-up-container {
+      transform: translateX(100%); opacity: 1; z-index: 5; animation: show 0.6s;
+    }
+
+    @keyframes show {
+      0%, 49.99% { opacity: 0; z-index: 1; }
+      50%, 100% { opacity: 1; z-index: 5; }
+    }
+
+    .overlay-container {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 50%;
+      height: 100%;
+      overflow: hidden;
+      transition: transform 0.6s ease-in-out;
+      z-index: 100;
+    }
+
+    .container.right-panel-active .overlay-container { transform: translateX(-100%); }
+
+    .overlay {
+      background: linear-gradient(to right, #00e6e6, #008080);
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: 0 0;
+      color: #FFFFFF;
+      position: relative;
+      left: -100%;
+      height: 100%;
+      width: 200%;
+      transform: translateX(0);
+      transition: transform 0.6s ease-in-out;
+    }
+
+    .container.right-panel-active .overlay { transform: translateX(50%); }
+
+    .overlay-panel {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 0 40px;
+      text-align: center;
+      top: 0;
+      height: 100%;
+      width: 50%;
+      transform: translateX(0);
+      transition: transform 0.6s ease-in-out;
+    }
+
+    .overlay-left { transform: translateX(-20%); }
+    .container.right-panel-active .overlay-left { transform: translateX(0); }
+
+    .overlay-right { right: 0; transform: translateX(0); }
+    .container.right-panel-active .overlay-right { transform: translateX(20%); }
+
+    /* ---------- POPUP (single unified) ---------- */
+    .popup {
+      position: fixed;
+      inset: 0; /* top:0;right:0;bottom:0;left:0; */
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.6);
+      z-index: 9999;
+      padding: 20px;
+    }
+    .popup-card {
+      background: #fff;
+      color: #000;
+      width: 420px;
+      max-width: 100%;
+      border-radius: 12px;
+      padding: 22px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      text-align: center;
+      font-weight: 600;
+    }
+    .popup-card h2 { margin: 0 0 10px 0; font-size: 20px; }
+    .popup-card p { margin: 0 0 18px 0; font-weight: 500; color: #333; }
+    .popup-card .ok-btn {
+      display: inline-block;
+      padding: 10px 20px;
+      border-radius: 8px;
+      background: #007BFF;
+      color: #fff;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .popup-card.error h2 { color: #b30000; }
+    .popup-card.success h2 { color: #0a7a00; }
+    .popup-card.error .ok-btn { background: #b30000; }
+    .popup-card.success .ok-btn { background: #0a7a00; }
+
+    /* small responsive tweaks */
+    @media (max-width: 600px) {
+      .container { width: 100%; min-height: 600px; }
+      .overlay-panel { padding: 0 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="container">
+    <!-- Sign Up -->
+    <div class="form-container sign-up-container">
+      <form action="register.php" method="POST">
+        <h1>Create Account</h1>
+        <input type="text" placeholder="Username" name="username" required />
+        <input type="email" placeholder="Email" name="email" required />
+        <input type="password" placeholder="Password" name="password" required />
+        <button type="submit">Sign Up</button>
+      </form>
+    </div>
+
+    <!-- Sign In -->
+    <div class="form-container sign-in-container">
+      <form action="login.php" method="POST">
+        <h1>Sign in</h1>
+        <input type="text" placeholder="Username" name="username" required />
+        <input type="password" placeholder="Password" name="password" required />
+        <a href="forgot_password.php">Forgot your password?</a>
+        <button type="submit">Sign In</button>
+      </form>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay-container">
+      <div class="overlay">
+        <div class="overlay-panel overlay-left">
+          <h1>Hi PC Builders!</h1>
+          <p>To start building, please login</p>
+          <button class="ghost" id="signIn">Sign In</button>
+        </div>
+        <div class="overlay-panel overlay-right">
+          <h1>Welcome to Master PC Build</h1>
+          <p>Enter your details to start building your dream PC</p>
+          <button class="ghost" id="signUp">Sign Up</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Single unified popup (error OR success) -->
+  <div class="popup" id="popup">
+    <div class="popup-card" id="popupCard">
+      <h2 id="popupTitle">Notice</h2>
+      <p id="popupMessage">Message text</p>
+      <button class="ok-btn" id="popupOk">OK</button>
+    </div>
+  </div>
+
+  <script>
+    // Panel toggle (keeps original behavior)
+    const signUpButton = document.getElementById('signUp');
+    const signInButton = document.getElementById('signIn');
+    const container = document.getElementById('container');
+
+    signUpButton.addEventListener('click', () => container.classList.add("right-panel-active"));
+    signInButton.addEventListener('click', () => container.classList.remove("right-panel-active"));
+
+    // Popup logic: read query params and show just one popup
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+      // priority: error over success (common UX)
+      const error = params.get('error');
+      const success = params.get('success');
+      const popup = document.getElementById('popup');
+      const card = document.getElementById('popupCard');
+      const title = document.getElementById('popupTitle');
+      const msg = document.getElementById('popupMessage');
+      const ok = document.getElementById('popupOk');
+
+      function showPopup(type, titleText, msgText) {
+        card.classList.remove('error','success');
+        card.classList.add(type);
+        title.textContent = titleText;
+        msg.textContent = msgText;
+        popup.style.display = 'flex';
+      }
+
+      if (error) {
+        // Map common error keys to messages
+        if (error === 'invalid') {
+          showPopup('error', 'Login Failed', 'Wrong username or password. Please try again.');
+        } else if (error === 'notfound') {
+          showPopup('error', 'Account Not Found', 'No account found with that username or email.');
+        } else if (error === 'notverified') {
+          showPopup('error', 'Email Not Verified', 'Your email is not verified. Please verify your account first.');
+        } else {
+          showPopup('error', 'Error', decodeURIComponent(error));
+        }
+      } else if (success) {
+        // Map success keys to messages
+        if (success === 'registered') {
+          showPopup('success', 'Registration Successful', '✅ Registration successful! Please log in.');
+        } else if (success === 'logout') {
+          showPopup('success', 'Logged Out', '✅ You have logged out successfully.');
+        } else if (success === 'reset') {
+          showPopup('success', 'Password Reset', '✅ Your password has been reset. Please log in with your new password.');
+        } else {
+          showPopup('success', 'Success', decodeURIComponent(success));
+        }
+      }
+
+      // OK button clears the popup and removes query params so it doesn't reappear on refresh
+      ok.addEventListener('click', () => {
+        popup.style.display = 'none';
+        // remove query string while keeping path
+        const newUrl = window.location.origin + window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+      });
+
+      // Auto-focus: when popup visible, trap focus to OK button for keyboard users
+      document.addEventListener('keydown', (e) => {
+        if (popup.style.display === 'flex' && (e.key === 'Enter' || e.key === 'Escape')) {
+          e.preventDefault();
+          ok.click();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
