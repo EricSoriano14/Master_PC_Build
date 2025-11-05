@@ -2,7 +2,6 @@
 session_start();
 include 'db.php';
 
-// Redirect if not logged in
 if (!isset($_SESSION['username']) || empty($_SESSION['username'])) {
     header("Location: index.php"); 
     exit;
@@ -10,7 +9,6 @@ if (!isset($_SESSION['username']) || empty($_SESSION['username'])) {
 
 $username = $_SESSION['username'];
 
-// Securely get user details
 $stmt = $conn->prepare("SELECT * FROM users WHERE username = ? LIMIT 1");
 $stmt->bind_param("s", $username);
 $stmt->execute();
@@ -27,16 +25,13 @@ $user = $result && $result->num_rows > 0 ? $result->fetch_assoc() : [
     'mobile' => ''
 ];
 
-// Tab control
 $tab = isset($_GET['tab']) ? $_GET['tab'] : 'home';
 
-// Pagination setup
 $products_per_page = 10;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 if ($page < 1) $page = 1;
 $offset = ($page - 1) * $products_per_page;
 
-// Category filter
 $category_filter = isset($_GET['category']) && $_GET['category'] != "" ? $_GET['category'] : null;
 ?>
 <!DOCTYPE html>
@@ -62,7 +57,6 @@ $category_filter = isset($_GET['category']) && $_GET['category'] != "" ? $_GET['
     overflow-x: hidden;
 }
 
-/* ✅ Blurred background layer */
 body::before {
     content: "";
     position: fixed;
@@ -91,7 +85,6 @@ body::after {
     z-index: -1;
 }
 
-        /* Header */
         header {
             background: linear-gradient(135deg, var(--accent), var(--accent2));
             padding: 18px 30px;
@@ -102,7 +95,6 @@ body::after {
             text-align: left;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
-        /* Navigation */
         nav {
             background: var(--panel);
             padding: 12px 30px;
@@ -125,7 +117,6 @@ body::after {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0,114,255,0.4);
         }
-        /* Container */
         .container {
             padding: 30px;
             max-width: 1400px;
@@ -139,7 +130,6 @@ body::after {
             margin-bottom: 20px;
             font-size: 18px;
         }
-        /* Category Tabs */
         .category-tabs {
             display: flex;
             flex-wrap: wrap;
@@ -168,7 +158,6 @@ body::after {
             color: var(--text-dark);
             transform: scale(1.05);
         }
-        /* Products Grid */
         .product-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -220,7 +209,6 @@ body::after {
         .product-card button:hover {
             opacity: 0.9;
         }
-        /* Cart Table */
         table.cart {
             width: 100%;
             border-collapse: collapse;
@@ -242,7 +230,6 @@ body::after {
             font-weight: bold;
             background: #2a2a2a;
         }
-        /* Pagination */
         .pagination {
             margin-top: 30px;
             text-align: center;
@@ -272,7 +259,6 @@ body::after {
             color: var(--text-dark);
             transform: scale(1.05);
         }
-        /* Account Section */
         .account-container {
             display: flex;
             gap: 30px;
@@ -387,7 +373,6 @@ body::after {
 <?php elseif ($tab == 'products'): ?>
     <h1>Products</h1>
 
-    <!-- Category Tabs -->
     <div class="category-tabs">
         <a href="?tab=products" class="<?php echo !$category_filter ? 'active' : ''; ?>">All</a>
         <?php
@@ -430,7 +415,6 @@ body::after {
         <?php endif; ?>
     </div>
 
-    <!-- Pagination -->
     <div class="pagination">
     <?php
     if ($category_filter) {
@@ -521,7 +505,6 @@ body::after {
     }
     ?>
 
-
 <?php elseif ($tab == 'account'): ?>
     <h1>Account Settings</h1>
     <div class="account-container">
@@ -545,7 +528,6 @@ body::after {
             </p>
         </div>
 
-        <!-- Account Form (always empty) -->
         <form class="account-form" action="update_account.php" method="POST">
             <h3>Personal Information</h3>
             <label>First Name</label>
@@ -579,3 +561,4 @@ body::after {
 </div>
 </body>
 </html>
+
