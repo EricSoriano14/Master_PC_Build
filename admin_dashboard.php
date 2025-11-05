@@ -2,7 +2,6 @@
 session_start();
 include 'db.php';
 
-// ✅ Allow only admins
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header("Location: login.php");
     exit;
@@ -73,23 +72,20 @@ if (isset($_POST['delete_product'])) {
     $stmt->execute();
 }
 
-/* ---------- PAGINATION ---------- */
-$limit = 5; // per page
-
-// Users
+$limit = 5; 
 $user_page = isset($_GET['user_page']) ? (int)$_GET['user_page'] : 1;
 $user_offset = ($user_page - 1) * $limit;
 $total_users = $conn->query("SELECT COUNT(*) as total FROM users")->fetch_assoc()['total'];
 $user_pages = ceil($total_users / $limit);
 $users = $conn->query("SELECT id, username, email, role FROM users LIMIT $limit OFFSET $user_offset");
 
-// Products
 $product_page = isset($_GET['product_page']) ? (int)$_GET['product_page'] : 1;
 $product_offset = ($product_page - 1) * $limit;
 $total_products = $conn->query("SELECT COUNT(*) as total FROM products")->fetch_assoc()['total'];
 $product_pages = ceil($total_products / $limit);
 $products = $conn->query("SELECT id, name, category, brand, price FROM products LIMIT $limit OFFSET $product_offset");
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -99,7 +95,6 @@ $products = $conn->query("SELECT id, name, category, brand, price FROM products 
 </head>
 <body>
 <div class="d-flex">
-    <!-- Sidebar -->
     <div class="bg-dark text-white p-3" style="width: 250px; height: 100vh; display: flex; flex-direction: column;">
         <h4>Admin Panel</h4>
         <ul class="nav flex-column flex-grow-1">
@@ -109,10 +104,8 @@ $products = $conn->query("SELECT id, name, category, brand, price FROM products 
         <a href="logout.php" class="btn btn-outline-light mt-auto">Logout</a>
     </div>
 
-    <!-- Main Content -->
     <div class="container-fluid p-4">
 
-        <!-- Manage Users -->
         <section id="users">
             <h3>Manage Users</h3>
             <button class="btn btn-primary mb-2" data-bs-toggle="collapse" data-bs-target="#createUserForm">Create New User</button>
@@ -156,10 +149,8 @@ $products = $conn->query("SELECT id, name, category, brand, price FROM products 
                 <?php endwhile; ?>
             </table>
 
-            <!-- Pagination for Users -->
 <nav>
   <ul class="pagination justify-content-center">
-    <!-- Previous Button -->
     <?php if ($user_page > 1): ?>
       <li class="page-item">
         <a class="page-link" href="?user_page=<?= $user_page - 1 ?>&product_page=<?= $product_page ?>">&laquo;</a>
@@ -167,7 +158,6 @@ $products = $conn->query("SELECT id, name, category, brand, price FROM products 
     <?php endif; ?>
 
     <?php
-    // Window size = 5 pages
     $start = max(1, $user_page - 2);
     $end = min($user_pages, $user_page + 2);
 
@@ -180,14 +170,12 @@ $products = $conn->query("SELECT id, name, category, brand, price FROM products 
     }
     ?>
 
-    <!-- Page Numbers -->
     <?php for ($i = $start; $i <= $end; $i++): ?>
       <li class="page-item <?= $i == $user_page ? 'active' : '' ?>">
         <a class="page-link" href="?user_page=<?= $i ?>&product_page=<?= $product_page ?>"><?= $i ?></a>
       </li>
     <?php endfor; ?>
 
-    <!-- Next Button -->
     <?php if ($user_page < $user_pages): ?>
       <li class="page-item">
         <a class="page-link" href="?user_page=<?= $user_page + 1 ?>&product_page=<?= $product_page ?>">&raquo;</a>
@@ -201,7 +189,7 @@ $products = $conn->query("SELECT id, name, category, brand, price FROM products 
 
         <hr>
 
-        <!-- Manage Products -->
+
         <section id="products">
             <h3>Manage Products</h3>
             <button class="btn btn-success mb-2" data-bs-toggle="collapse" data-bs-target="#insertProductForm">Insert Product</button>
@@ -245,10 +233,8 @@ $products = $conn->query("SELECT id, name, category, brand, price FROM products 
                 <?php endwhile; ?>
             </table>
 
-            <!-- Pagination for Products -->
 <nav>
   <ul class="pagination justify-content-center">
-    <!-- Previous Button -->
     <?php if ($product_page > 1): ?>
       <li class="page-item">
         <a class="page-link" href="?product_page=<?= $product_page - 1 ?>&user_page=<?= $user_page ?>">&laquo;</a>
@@ -256,7 +242,6 @@ $products = $conn->query("SELECT id, name, category, brand, price FROM products 
     <?php endif; ?>
 
     <?php
-    // Window size = 5 pages
     $start = max(1, $product_page - 2);
     $end = min($product_pages, $product_page + 2);
 
@@ -269,14 +254,12 @@ $products = $conn->query("SELECT id, name, category, brand, price FROM products 
     }
     ?>
 
-    <!-- Page Numbers -->
     <?php for ($i = $start; $i <= $end; $i++): ?>
       <li class="page-item <?= $i == $product_page ? 'active' : '' ?>">
         <a class="page-link" href="?product_page=<?= $i ?>&user_page=<?= $user_page ?>"><?= $i ?></a>
       </li>
     <?php endfor; ?>
 
-    <!-- Next Button -->
     <?php if ($product_page < $product_pages): ?>
       <li class="page-item">
         <a class="page-link" href="?product_page=<?= $product_page + 1 ?>&user_page=<?= $user_page ?>">&raquo;</a>
@@ -292,3 +275,4 @@ $products = $conn->query("SELECT id, name, category, brand, price FROM products 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
